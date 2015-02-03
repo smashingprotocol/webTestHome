@@ -63,10 +63,10 @@
 		
 		<mail mailhost="${wt.mailhost}" mailport="${wt.mailport}" subject="[Webtest in ${env.HOSTNAME}]: (${wt.testProject}) Automated Test Result of ${host}" encoding="plain" tolist="${tolist}">
 			<from address="${wt.address}"/>
-			<message>Automation test result for ${host} is completed. Please check results on the link provided.
+			<message>Automation test result for ${host} has been completed. Please check results on the link provided. Download the zip file and extract to your local folder.
 			
 Test Case Ids:${testcase.selected}
-Link to Report: https://${reportServer}/webtest/Reports/${wt.testProject}/${DSTAMP}/${TSTAMP}/index.html</message>
+Link to Download the Report: https://${reportServer}/webtest/Reports/${wt.testProject}/${DSTAMP}/${TSTAMP}/results${DSTAMP}${TSTAMP}.zip</message>
 			<!--<attachments>
 				<fileset dir="/dist">
 					<include name="**/*.zip"/>
@@ -84,21 +84,24 @@ Link to Report: https://${reportServer}/webtest/Reports/${wt.testProject}/${DSTA
 		</delete>
 		<!-- Create a report in LOCALHOST -->
 		<mkdir dir="${report.dir}\${wt.testProject}\${DSTAMP}\${TSTAMP}"/>
-		<copy file="${wt.config.resultpath}/dist/results ${DSTAMP} ${TSTAMP}.zip" tofile="${report.dir}\${wt.testProject}\${DSTAMP}\${TSTAMP}\results ${DSTAMP} ${TSTAMP}.zip" />
-		<unzip src="${report.dir}\${wt.testProject}\${DSTAMP}\${TSTAMP}\results ${DSTAMP} ${TSTAMP}.zip" dest="${report.dir}\${wt.testProject}\${DSTAMP}\${TSTAMP}\" />
-		<delete file="${report.dir}\${wt.testProject}\${DSTAMP}\${TSTAMP}\results ${DSTAMP} ${TSTAMP}.zip"/>
+		<copy file="${wt.config.resultpath}/dist/results ${DSTAMP} ${TSTAMP}.zip" tofile="${report.dir}\${wt.testProject}\${DSTAMP}\${TSTAMP}\results${DSTAMP}${TSTAMP}.zip" />
+		<!--<unzip src="${report.dir}\${wt.testProject}\${DSTAMP}\${TSTAMP}\results ${DSTAMP} ${TSTAMP}.zip" dest="${report.dir}\${wt.testProject}\${DSTAMP}\${TSTAMP}\" />
+		<delete file="${report.dir}\${wt.testProject}\${DSTAMP}\${TSTAMP}\results ${DSTAMP} ${TSTAMP}.zip"/> -->
 	</target>
 	
-	<target name="copyReportToRemoteServer" if="isCopyReportToRemoteServer">
+	<target name="copyReportToRemoteServer" if="isCopyReportToRemoteServer" depends="deleteReportServerHistory">
 		
 		<!-- Create a report in Remote Server specified in properties file -->
-			
-			<mkdir dir="${report.dir}\${wt.testProject}\${DSTAMP}\${TSTAMP}"/>
-			<copy file="${wt.config.resultpath}/dist/results ${DSTAMP} ${TSTAMP}.zip" tofile="\\${reportServer}\webtest\Reports\${wt.testProject}\${DSTAMP}\${TSTAMP}\results ${DSTAMP} ${TSTAMP}.zip" />
-			<unzip src="\\${reportServer}\webtest\Reports\${wt.testProject}\${DSTAMP}\${TSTAMP}\results ${DSTAMP} ${TSTAMP}.zip" dest="\\${reportServer}\webtest\Reports\${wt.testProject}\${DSTAMP}\${TSTAMP}\" />
-			<delete file="\\${reportServer}\webtest\Reports\${wt.testProject}\${DSTAMP}\${TSTAMP}\results ${DSTAMP} ${TSTAMP}.zip"/>
-			
+		<copy file="${wt.config.resultpath}/dist/results ${DSTAMP} ${TSTAMP}.zip" tofile="\\${reportServer}\webtest\Reports\${wt.testProject}\${DSTAMP}\${TSTAMP}\results${DSTAMP}${TSTAMP}.zip" />
+		<!--<unzip src="\\${reportServer}\webtest\Reports\${wt.testProject}\${DSTAMP}\${TSTAMP}\results ${DSTAMP} ${TSTAMP}.zip" dest="\\${reportServer}\webtest\Reports\${wt.testProject}\${DSTAMP}\${TSTAMP}\" />
+		<delete file="\\${reportServer}\webtest\Reports\${wt.testProject}\${DSTAMP}\${TSTAMP}\results ${DSTAMP} ${TSTAMP}.zip"/> -->	
 		<!--End-->
+	</target>
+	
+	<target name="deleteReportServerHistory" if="isDeleteEmailReport">
+		<delete includeemptydirs="true" failonerror="false">
+			<fileset dir="\\${reportServer}\webtest\Reports\${wt.testProject}" includes="**/*"/>
+		</delete>
 	</target>
 	
 	<!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
